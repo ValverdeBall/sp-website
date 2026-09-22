@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>СП Industries</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<style>
+  :root {
+    --bg: #17130f;
+    --bg-2: #1f1a14;
+    --surface: #251f18;
+    --surface-2: #2c251c;
+    --line: #3a3126;
+    --brass: #c99a4b;
+    --brass-bright: #e0b567;
+    --rust: #b6552c;
+    --moss: #7a9b57;
+    --cream: #ece2d0;
+    --cream-dim: #b6a98f;
+    --font-head: 'Space Grotesk', system-ui, sans-serif;
+    --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: inherit; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--cream);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      radial-gradient(circle at 15% 8%, rgba(201,154,75,0.07), transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(182,85,44,0.06), transparent 45%);
+  }
+  #root { position: relative; z-index: 1; }
+  a { color: inherit; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 24px; }
+
+  .gear-rule { display: flex; align-items: center; gap: 10px; margin: 0 0 28px; color: var(--brass); opacity: 0.8; }
+  .gear-rule svg { flex-shrink: 0; }
+  .gear-rule .line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--line), transparent); }
+
+  header.hero {
+    padding: 64px 0 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cogs-bg {
+    position: absolute; top: -40px; right: -60px; opacity: 0.08; z-index: 0;
+    width: 260px; height: 260px;
+  }
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--brass-bright);
+    letter-spacing: 0.02em;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--cream-dim);
+    box-shadow: 0 0 0 3px rgba(182,169,143,0.18);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+  }
+  .status-dot.online { background: var(--moss); box-shadow: 0 0 0 3px rgba(122,155,87,0.18); }
+  .status-dot.offline { background: var(--rust); box-shadow: 0 0 0 3px rgba(182,85,44,0.18); }
+  h1.title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: clamp(38px, 7vw, 58px);
+    line-height: 1.02;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .title .accent { color: var(--brass-bright); }
+  p.lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--cream-dim);
+    max-width: 54ch;
+    margin: 0 0 30px;
+  }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14.5px;
+    padding: 12px 20px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.15s ease;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--brass); color: #1a1409; }
+  .btn-primary:hover { background: var(--brass-bright); }
+  .btn-ghost { background: transparent; border-color: var(--line); color: var(--cream); }
+  .btn-ghost:hover { border-color: var(--brass); color: var(--brass-bright); }
+
+  section { padding: 44px 0; border-top: 1px solid var(--line); }
+
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 26px; gap: 16px; flex-wrap: wrap; }
+  h2.section-title {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 24px;
+    margin: 0;
+  }
+  .section-note { font-size: 14px; color: var(--cream-dim); }
+
+  .info-panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 26px 28px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  @media (max-width: 620px) { .info-panel { grid-template-columns: 1fr; } }
+  .info-item .info-label { font-size: 12.5px; color: var(--cream-dim); margin-bottom: 6px; }
+  .info-item .info-value { font-family: var(--font-mono); font-size: 16px; color: var(--brass-bright); }
+  .ip-row { display: flex; align-items: center; gap: 10px; }
+  .copy-btn {
+    background: var(--surface-2); border: 1px solid var(--line); color: var(--cream-dim);
+    font-family: var(--font-mono); font-size: 12px; padding: 5px 10px; border-radius: 3px; cursor: pointer;
+  }
+  .copy-btn:hover { border-color: var(--brass); color: var(--brass-bright); }
+
+  .rules-list { margin: 20px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .rules-list li {
+    display: flex; gap: 12px; font-size: 14.5px; color: var(--cream-dim); line-height: 1.5;
+  }
+  .rules-list li .n { font-family: var(--font-mono); color: var(--rust); flex-shrink: 0; }
+
+  .tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 4px; width: fit-content; }
+  .tab-btn {
+    font-family: var(--font-body); font-weight: 600; font-size: 13.5px;
+    background: transparent; border: none; color: var(--cream-dim);
+    padding: 8px 16px; border-radius: 3px; cursor: pointer; transition: all 0.15s ease;
+  }
+  .tab-btn.active { background: var(--brass); color: #1a1409; }
+  .tab-btn:not(.active):hover { color: var(--cream); }
+
+  .news-entry {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .news-entry:last-child { border-bottom: none; }
+  .news-date { font-family: var(--font-mono); font-size: 12.5px; color: var(--rust); padding-top: 3px; }
+  .news-title { font-family: var(--font-head); font-weight: 600; font-size: 16.5px; margin: 0 0 6px; }
+  .news-body { font-size: 14.5px; color: var(--cream-dim); line-height: 1.6; margin: 0; }
+  .tag {
+    display: inline-block; font-family: var(--font-mono); font-size: 11px;
+    color: var(--moss); border: 1px solid rgba(122,155,87,0.35); border-radius: 3px;
+    padding: 2px 7px; margin-top: 10px;
+  }
+
+  .faction-grid, .crew-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  .faction-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 4px;
+    padding: 18px; text-align: left; cursor: pointer; transition: border-color 0.15s ease;
+    font-family: var(--font-body); color: var(--cream);
+  }
+  .faction-card:hover { border-color: var(--brass); }
+  .faction-avatar {
+    width: 42px; height: 42px; border-radius: 3px;
+    background: linear-gradient(135deg, var(--brass), var(--rust));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-weight: 700; color: #1a1409; font-size: 16px;
+    margin-bottom: 14px;
+  }
+  .faction-name { font-family: var(--font-head); font-weight: 600; font-size: 16px; margin: 0 0 3px; }
+  .faction-count { font-family: var(--font-mono); font-size: 12px; color: var(--brass-bright); margin: 0 0 10px; }
+  .faction-tagline { font-size: 13.5px; color: var(--cream-dim); line-height: 1.55; margin: 0; }
+
+  .back-btn {
+    background: transparent; border: none; color: var(--cream-dim);
+    font-family: var(--font-mono); font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; margin-bottom: 18px; padding: 0;
+  }
+  .back-btn:hover { color: var(--brass-bright); }
+
+  .crew-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 4px;
+    padding: 18px;
+  }
+  .crew-avatar {
+    width: 42px; height: 42px; border-radius: 3px;
+    background: linear-gradient(135deg, var(--brass), var(--rust));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-weight: 700; color: #1a1409; font-size: 16px;
+    margin-bottom: 14px;
+  }
+  .crew-name { font-family: var(--font-head); font-weight: 600; font-size: 16px; margin: 0 0 3px; }
+  .crew-role { font-family: var(--font-mono); font-size: 12px; color: var(--brass-bright); margin: 0 0 10px; }
+  .crew-blurb { font-size: 13.5px; color: var(--cream-dim); line-height: 1.55; margin: 0; }
+
+  footer {
+    padding: 36px 0 56px;
+    font-size: 13px;
+    color: var(--cream-dim);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const { useState, useEffect } = React;
+const e = React.createElement;
+
+const SERVER_ADDRESS = 'gf-1.apexnodes.xyz';
+
+function GearIcon(props) {
+  return e('svg', { width: props.size || 18, height: props.size || 18, viewBox: '0 0 24 24', fill: 'none' },
+    e('path', {
+      d: 'M12 2 L13.2 5.1 L16.4 4.3 L16.1 7.6 L19.3 8.6 L17.5 11.3 L19.8 13.6 L16.9 15.1 L17.7 18.4 L14.4 17.7 L13.5 20.9 L11 18.7 L8.5 20.9 L7.6 17.7 L4.3 18.4 L5.1 15.1 L2.2 13.6 L4.5 11.3 L2.7 8.6 L5.9 7.6 L5.6 4.3 L8.8 5.1 Z',
+      stroke: 'currentColor', strokeWidth: 1.1, strokeLinejoin: 'round'
+    }),
+    e('circle', { cx: 11, cy: 11.5, r: 3.2, stroke: 'currentColor', strokeWidth: 1.1 })
+  );
+}
+
+function GearRule({ label }) {
+  return e('div', { className: 'gear-rule' },
+    e(GearIcon, { size: 15 }),
+    e('span', { style: { fontFamily: 'var(--font-mono)', fontSize: 12.5, letterSpacing: '0.02em' } }, label),
+    e('div', { className: 'line' })
+  );
+}
+
+const NEWS = [
+  {
+    date: '22 СЕНТЯБРЯ', title: 'Пай решает возродить сервер?',
+    body: 'Сегодня, Пай решил составить модлист - вещь, которая требовалась Руслану для возрождения сервера',
+    tag: 'новости сервера'
+  }
+];
+
+const FACTIONS = [
+  {
+    id: 'clowns',
+    name: 'Малая Клоуновка',
+    tagline: 'Всегда лидирующая фракция, Во все тяжкие.',
+    members: [
+      { initials: 'Пай', name: 'Pai', role: 'Основатель Клоуновки, основной инженер Клоуновки и не только, Уолтер Уайт' },
+      { initials: 'VB', name: 'Valverde_Ball', role: 'Сооснователь, соинженер и ресурсо-доставщик Пая, Джесси Пинкман' }
+    ]
+  }
+];
+
+const RULES = [
+  'Запрещаются лаг-машины (сборка итак напрягает сервер, куда там лаг-машина)',
+  'Поклоняться Клоунготту',
+  'Абемеленд навсегда',
+  'Клоуновка навсегда'
+];
+
+function useServerStatus(address) {
+  const [status, setStatus] = useState({ loading: true, online: false, players: 0, max: 0, error: false });
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('https://api.mcsrvstat.us/3/' + address)
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        setStatus({
+          loading: false,
+          online: !!data.online,
+          players: (data.players && data.players.online) || 0,
+          max: (data.players && data.players.max) || 0,
+          error: false
+        });
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setStatus({ loading: false, online: false, players: 0, max: 0, error: true });
+      });
+    return () => { cancelled = true; };
+  }, [address]);
+
+  return status;
+}
+
+function App() {
+  const [tab, setTab] = useState('news');
+  const [selectedFactionId, setSelectedFactionId] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const status = useServerStatus(SERVER_ADDRESS);
+
+  function copyIp() {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(SERVER_ADDRESS).catch(() => {});
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+
+  let kickerText;
+  let dotClass = 'status-dot';
+  if (status.loading) {
+    kickerText = 'ПРОВЕРКА СТАТУСА…';
+  } else if (status.error) {
+    kickerText = 'СТАТУС НЕДОСТУПЕН';
+  } else if (status.online) {
+    kickerText = 'СЕРВЕР ВКЛЮЧЕН · ' + status.players + '/' + status.max + ' PLAYERS';
+    dotClass += ' online';
+  } else {
+    kickerText = 'СЕРВЕР ВЫКЛЮЧЕН';
+    dotClass += ' offline';
+  }
+
+  const selectedFaction = FACTIONS.find((f) => f.id === selectedFactionId) || null;
+
+  return e(React.Fragment, null,
+    e('header', { className: 'hero' },
+      e('div', { className: 'cogs-bg' }, e(GearIcon, { size: 260 })),
+      e('div', { className: 'wrap' },
+        e('div', { className: 'kicker' },
+          e('span', { className: dotClass }),
+          kickerText
+        ),
+        e('h1', { className: 'title' }, 'Величайший ', e('span', { className: 'accent' }, 'СП Industries')),
+        e('p', { className: 'lede' },
+          'Сервер с фракциями и с сборкой модов по Креейту для тех построют своё, сломают, заколхозят и снесут соседа, нежели заиспользуют готовое.'
+        ),
+        e('div', { className: 'hero-actions' },
+          e('button', { className: 'btn btn-primary', onClick: copyIp }, copied ? 'Скопировано \u2713' : 'Скопировать айпи'),
+          e('a', { className: 'btn btn-ghost', href: '#factions' }, 'Новости и фракции')
+        )
+      )
+    ),
+
+    e('section', null,
+      e('div', { className: 'wrap' },
+        e(GearRule, { label: 'ПОДКЛЮЧИТЬСЯ' }),
+        e('div', { className: 'info-panel' },
+          e('div', { className: 'info-item' },
+            e('div', { className: 'info-label' }, 'Айпи сервера'),
+            e('div', { className: 'ip-row' },
+              e('span', { className: 'info-value' }, SERVER_ADDRESS),
+              e('button', { className: 'copy-btn', onClick: copyIp }, copied ? 'скопировано' : 'скопировать')
+            )
+          ),
+          e('div', { className: 'info-item' },
+            e('div', { className: 'info-label' }, 'Майнкрафт / Лоадер'),
+            e('div', { className: 'info-value' }, '1.21.1 \u00b7 NeoForge')
+          ),
+          e('div', { className: 'info-item' },
+            e('div', { className: 'info-label' }, 'Текущая сборка'),
+            e('div', { className: 'info-value' }, 'СП-сборка v2')
+          )
+        ),
+        e('ul', { className: 'rules-list' },
+          RULES.map((r, i) => e('li', { key: i },
+            e('span', { className: 'n' }, String(i + 1).padStart(2, '0')),
+            e('span', null, r)
+          ))
+        )
+      )
+    ),
+
+    e('section', { id: 'factions' },
+      e('div', { className: 'wrap' },
+        e(GearRule, { label: 'Журнал состава' }),
+        e('div', { className: 'section-head' },
+          e('h2', { className: 'section-title' },
+            tab === 'news' ? 'Что нового?' : (selectedFaction ? selectedFaction.name : 'Фракции')
+          ),
+          e('div', { className: 'tabs' },
+            e('button', {
+              className: 'tab-btn' + (tab === 'news' ? ' active' : ''),
+              onClick: () => setTab('news')
+            }, 'Новости'),
+            e('button', {
+              className: 'tab-btn' + (tab === 'factions' ? ' active' : ''),
+              onClick: () => setTab('factions')
+            }, 'Фракции')
+          )
+        ),
+
+        tab === 'news'
+          ? e('div', null, NEWS.map((n, i) => e('div', { className: 'news-entry', key: i },
+              e('div', { className: 'news-date' }, n.date),
+              e('div', null,
+                e('h3', { className: 'news-title' }, n.title),
+                e('p', { className: 'news-body' }, n.body),
+                e('span', { className: 'tag' }, n.tag)
+              )
+            )))
+          : (
+            selectedFaction
+              ? e('div', null,
+                  e('button', { className: 'back-btn', onClick: () => setSelectedFactionId(null) }, '\u2190 \u041d\u0430\u0437\u0430\u0434 \u043a \u0444\u0440\u0430\u043a\u0446\u0438\u044f\u043c'),
+                  e('div', { className: 'crew-grid' }, selectedFaction.members.map((m, i) => e('div', { className: 'crew-card', key: i },
+                    e('div', { className: 'crew-avatar' }, m.initials),
+                    e('h3', { className: 'crew-name' }, m.name),
+                    e('p', { className: 'crew-role' }, m.role)
+                  )))
+                )
+              : e('div', { className: 'faction-grid' }, FACTIONS.map((f) => e('button', {
+                  className: 'faction-card',
+                  key: f.id,
+                  onClick: () => setSelectedFactionId(f.id)
+                },
+                  e('div', { className: 'faction-avatar' }, f.name.split(' ').map((w) => w[0]).join('')),
+                  e('h3', { className: 'faction-name' }, f.name),
+                  e('p', { className: 'faction-count' }, f.members.length + ' участника'),
+                  e('p', { className: 'faction-tagline' }, f.tagline)
+                )))
+          )
+      )
+    ),
+
+    e('footer', null,
+      e('div', { className: 'wrap', style: { display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, width: '100%' } },
+        e('span', null, 'СП Industries \u002d Величайший сервер всея круга общения СМЮМ'),
+        e('span', null, 'v2 \u00b7 последнее обновление десятилетия назад.'),
+        e('span', null, 'P.S навайбкодено потому что я не умею дизайнить👍')
+      )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script>
+</body>
+</html>
