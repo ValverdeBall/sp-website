@@ -240,7 +240,7 @@
 const { useState, useEffect } = React;
 const e = React.createElement;
 
-const SERVER_ADDRESS = 'gf-1.apexnodes.xyz';
+const SERVER_ADDRESS = 'gf-1.apexnodes.xyz:60438';
 
 function GearIcon(props) {
   return e('svg', { width: props.size || 18, height: props.size || 18, viewBox: '0 0 24 24', fill: 'none' },
@@ -277,8 +277,15 @@ const FACTIONS = [
       { initials: 'Пай', name: 'Pai', role: 'Основатель Клоуновки, основной инженер Клоуновки и не только, Уолтер Уайт' },
       { initials: 'VB', name: 'Valverde_Ball', role: 'Сооснователь, соинженер и ресурсо-доставщик Пая, Джесси Пинкман' },
       { initials: '141', name: 'KMaTt141', role: 'Наикрутейший нёрд во всём мире, величайший ПВПшер (наверное), который пришёл в Клоуновку просто из-за вайба.' },
+    ]
+  },
+  {
+    id: 'idk',
+    name: 'Отшельники Попрошайки',
+    tagline: 'Геи',
+    members: [
       { initials: 'DA', name: 'diemonarmor', role: 'Просто существует.' },
-      { initials: 'BA', name: 'BASajop', role: 'Китайская мудрость гласит: "Кто не пьёт чай - тот чмо."' }
+      { initials: 'BA', name: 'BASajop', role: 'Китайская мудрость гласит: "Кто не пьёт чай - тот чмо."' }  
     ]
   }
 ];
